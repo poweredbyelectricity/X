@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GitHub Issues Viewer</title>
+    <title>GitHub File Repository Viewer</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -34,7 +34,7 @@
 </head>
 <body>
 
-    <h1>GitHub Issues Viewer</h1>
+    <h1>GitHub File Repository Viewer</h1>
     <ul id="file-list"></ul>
 
     <script>
@@ -49,15 +49,21 @@
                 data.forEach(issue => {
                     if (issue.body) { // Check if the issue has a body
                         const issueNumber = issue.number; // Get the issue number
-                        const fileName = issue.title; // Use the issue title as the file name
                         const issueLink = issue.html_url; // Link to the issue
 
-                        const listItem = document.createElement('li');
-                        listItem.innerHTML = `
-                            <strong>${fileName}</strong> (Issue #${issueNumber}): <a href="${issueLink}" target="_blank">View Issue</a><br>
-                            <div>${issue.body}</div>
-                        `;
-                        fileList.appendChild(listItem);
+                        // Use a regular expression to extract the file name and URL from the body
+                        const fileMatch = issue.body.match(/\[(.*?)\]\((.*?)\)/);
+                        if (fileMatch) {
+                            const fileName = fileMatch[1]; // Extracted file name
+                            const fileUrl = fileMatch[2]; // Extracted file URL
+
+                            const listItem = document.createElement('li');
+                            listItem.innerHTML = `
+                                <strong>${fileName}</strong> (Issue #${issueNumber}): <a href="${issueLink}" target="_blank">View Issue</a><br>
+                                <a href="${fileUrl}" target="_blank">Download ${fileName}</a>
+                            `;
+                            fileList.appendChild(listItem);
+                        }
                     }
                 });
             })
