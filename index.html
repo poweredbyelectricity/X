@@ -3,36 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>File Directory</title>
+    <title>GitHub Issues Viewer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 0;
+        }
+        h1 {
+            color: #333;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            margin: 15px 0;
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
-    <h1>File Directory</h1>
+
+    <h1>GitHub Issues Viewer</h1>
     <ul id="file-list"></ul>
+
     <script>
-    const owner = 'poweredbyelectricity'; // Replace with your GitHub username
-    const repo = 'X'; // Replace with your repository name
-    const issuesUrl = `https://api.github.com/repos/${owner}/${repo}/issues`;
+        const owner = 'poweredbyelectricity'; // GitHub username
+        const repo = 'X'; // Repository name
+        const issuesUrl = `https://api.github.com/repos/${owner}/${repo}/issues`;
 
-    fetch(issuesUrl)
-        .then(response => response.json())
-        .then(data => {
-            const fileList = document.getElementById('file-list');
-            data.forEach(issue => {
-                if (issue.body) { // Check if the issue has a body
-                    const issueNumber = issue.number; // Get the issue number
-                    const fileName = issue.title; // Use the issue title as the file name
+        fetch(issuesUrl)
+            .then(response => response.json())
+            .then(data => {
+                const fileList = document.getElementById('file-list');
+                data.forEach(issue => {
+                    if (issue.body) { // Check if the issue has a body
+                        const issueNumber = issue.number; // Get the issue number
+                        const fileName = issue.title; // Use the issue title as the file name
+                        const issueLink = issue.html_url; // Link to the issue
 
-                    // Extract the URL from the body of the issue
-                    const fileUrlMatch = issue.body.match(/https:\/\/github\.com\/.*?\/.*?\/raw\/.*?\/(.*?)/);
-                    const fileUrl = fileUrlMatch ? fileUrlMatch[0] : `https://github.com/user-attachments/files/${issueNumber}-${encodeURIComponent(fileName)}`;
+                        const listItem = document.createElement('li');
+                        listItem.innerHTML = `
+                            <strong>${fileName}</strong> (Issue #${issueNumber}): <a href="${issueLink}" target="_blank">View Issue</a><br>
+                            <div>${issue.body}</div>
+                        `;
+                        fileList.appendChild(listItem);
+                    }
+                });
+            })
+            .catch(error => console.error('Error fetching issues:', error));
+    </script>
 
-                    const listItem = document.createElement('li');
-                    listItem.innerHTML = `<a href="${fileUrl}" target="_blank">${fileName}</a> (Issue #${issueNumber})`;
-                    fileList.appendChild(listItem);
-                }
-            });
-        })
-        .catch(error => console.error('Error fetching issues:', error));
-</script>
 </body>
 </html>
