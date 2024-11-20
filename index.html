@@ -18,10 +18,13 @@
         .then(data => {
             const fileList = document.getElementById('file-list');
             data.forEach(issue => {
-                if (issue.body) { // Check if the issue has a body (where the file URL might be)
+                if (issue.body) { // Check if the issue has a body
                     const issueNumber = issue.number; // Get the issue number
                     const fileName = issue.title; // Use the issue title as the file name
-                    const fileUrl = `https://github.com/user-attachments/files/${issueNumber}-${encodeURIComponent(fileName)}`; // Construct the file URL
+
+                    // Extract the URL from the body of the issue
+                    const fileUrlMatch = issue.body.match(/https:\/\/github\.com\/.*?\/.*?\/raw\/.*?\/(.*?)/);
+                    const fileUrl = fileUrlMatch ? fileUrlMatch[0] : `https://github.com/user-attachments/files/${issueNumber}-${encodeURIComponent(fileName)}`;
 
                     const listItem = document.createElement('li');
                     listItem.innerHTML = `<a href="${fileUrl}" target="_blank">${fileName}</a> (Issue #${issueNumber})`;
